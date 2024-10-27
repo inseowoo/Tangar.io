@@ -30,6 +30,8 @@ public class SpaceshipController : NetworkBehaviour
 
     [Networked] private TickTimer _respawnTimer { get; set; }
 
+    DebugText debug_text;
+
     public override void Spawned()
     {
         // --- Host & Client
@@ -41,12 +43,14 @@ public class SpaceshipController : NetworkBehaviour
 
         //_visualController.SetColorFromPlayerID(Object.InputAuthority.PlayerId);
 
+        debug_text = GameObject.FindObjectOfType<DebugText>();
+
         // --- Host
         // The Game Session SPECIFIC settings are initialized
         if (Object.HasStateAuthority == false) return;
         _isAlive = true;
 
-            
+        
     }
 
     public override void Render()
@@ -99,6 +103,7 @@ public class SpaceshipController : NetworkBehaviour
     {
         _lagCompensatedHits.Clear();
 
+        // Get Collision From MaskLayer
         var count = Runner.LagCompensation.OverlapSphere(_rigidbody.position, _spaceshipDamageRadius,
             Object.InputAuthority, _lagCompensatedHits,
             _asteroidCollisionLayer.value);
@@ -107,13 +112,23 @@ public class SpaceshipController : NetworkBehaviour
 
         _lagCompensatedHits.SortDistance();
 
-        //var asteroidBehaviour = _lagCompensatedHits[0].GameObject.GetComponent<AsteroidBehaviour>();
-        //if (asteroidBehaviour.IsAlive == false)
-        //    return false;
+        // For Debug
+        string txt = $"Collide {this.name} with {_lagCompensatedHits[0].GameObject.name}";
+        UnityEngine.Debug.Log(txt);
+        debug_text.PushDebugText(txt);
 
-        //asteroidBehaviour.HitAsteroid(PlayerRef.None);
+        // Check Collider
+        var dummyTanmak = _lagCompensatedHits[0].GameObject.GetComponent<DummyTanmak>();
+        if (dummyTanmak)
+        {
+            if (dummyTanmak._isAlive == false) return false;
 
-        return true;
+            dummyTanmak.Hit();
+
+            return true;
+        }
+
+        return false;
     }
 
     // Toggle the _isAlive boolean if the spaceship was hit and check whether the player has any lives left.
@@ -124,6 +139,7 @@ public class SpaceshipController : NetworkBehaviour
 
         ResetShip();
 
+        // ---- Host Only
         if (Object.HasStateAuthority == false) return;
 
         if (_playerDataNetworked.Lives > 1)
