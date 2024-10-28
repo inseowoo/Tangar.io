@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class GameStateController : NetworkBehaviour
 {
+    [SerializeField] private InGameUIManager _uiManager;
+
     enum GameState
     {
         Starting,
@@ -177,6 +179,8 @@ public class GameStateController : NetworkBehaviour
     {
         _timer = TickTimer.CreateFromSeconds(Runner, _endDelay);
         _gameState = GameState.Ending;
+
+        _uiManager.EndGamePanel.SetActive(true);
     }
 
     public void TrackNewPlayer(NetworkBehaviourId playerDataNetworkedId)
