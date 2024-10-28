@@ -145,10 +145,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _respawnDelay: 4
-  _spaceshipDamageRadius: 2.5
-  _asteroidCollisionLayer:
+  _playerDamageRadius: 2.5
+  _tanmakCollisionLayer:
     serializedVersion: 2
     m_Bits: 64
+  _playerCollisionLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  _itemCollisionLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &5683997609357743952
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -161,7 +167,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d9ce97a5e645ad4481941406faedb6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rotationSpeed: 90
   _movementSpeed: 2000
   _maxSpeed: 200
 --- !u!114 &236562031478822525

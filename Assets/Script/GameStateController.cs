@@ -37,7 +37,6 @@ public class GameStateController : NetworkBehaviour
         //_ingameTimerDisplay.gameObject.SetActive(false);
 
         // If the game has already started, find all currently active players' PlayerDataNetworked component Ids
-        UnityEngine.Debug.LogWarning("Spawned1");
         if (_gameState != GameState.Starting)
         {
             foreach (var player in Runner.ActivePlayers)
@@ -46,7 +45,6 @@ public class GameStateController : NetworkBehaviour
                 TrackNewPlayer(playerObject.GetComponent<PlayerDataNetworked>().Id);
             }
         }
-        UnityEngine.Debug.LogWarning("Spawned2");
         // Set is Simulated so that FixedUpdateNetwork runs on every client instead of just the Host
         Runner.SetIsSimulated(Object, true);
 
@@ -56,13 +54,11 @@ public class GameStateController : NetworkBehaviour
         // Initialize the game state on the host
         _gameState = GameState.Starting;
         _timer = TickTimer.CreateFromSeconds(Runner, _startDelay);
-        UnityEngine.Debug.LogWarning("Spawned3");
     }
 
     public override void FixedUpdateNetwork()
     {
         // Update the game display with the information relevant to the current game state
-        UnityEngine.Debug.LogWarning("FixedUpdateNetwork1");
         switch (_gameState)
         {
             case GameState.Starting:
@@ -83,7 +79,6 @@ public class GameStateController : NetworkBehaviour
             default:
                 throw new ArgumentOutOfRangeException();
         }
-        UnityEngine.Debug.LogWarning("FixedUpdateNetwork2");
     }
 
     private void UpdateStartingDisplay()
@@ -92,15 +87,12 @@ public class GameStateController : NetworkBehaviour
         // Display the remaining time until the game starts in seconds (rounded down to the closest full second)
 
         //_startEndDisplay.text = $"Game Starts In {Mathf.RoundToInt(_timer.RemainingTime(Runner) ?? 0)}";
-        UnityEngine.Debug.LogWarning("UpdateStartingDisplay1");
         // --- Host
         if (Object.HasStateAuthority == false) return;
         if (_timer.ExpiredOrNotRunning(Runner) == false) return;
-        UnityEngine.Debug.LogWarning("UpdateStartingDisplay2");
-        // Starts the Spaceship and Asteroids spawners once the game start delay has expired
-        FindObjectOfType<SpaceshipSpawner>().StartSpaceshipSpawner(this);
+        // Starts the Player and Asteroids spawners once the game start delay has expired
+        FindObjectOfType<PlayerSpawner>().StartPlayerSpawner(this);
         //FindObjectOfType<AsteroidSpawner>().StartAsteroidSpawner();
-        UnityEngine.Debug.LogWarning("UpdateStartingDisplay3");
         // Switches to the Running GameState and sets the time to the length of a game session
         _gameState = GameState.Running;
         _timer = TickTimer.CreateFromSeconds(Runner, _gameSessionLength);
@@ -128,7 +120,7 @@ public class GameStateController : NetworkBehaviour
         //_ingameTimerDisplay.gameObject.SetActive(false);
         //_startEndDisplay.text =
         //    $"{playerData.NickName} won with {playerData.Score} points. Disconnecting in {Mathf.RoundToInt(_timer.RemainingTime(Runner) ?? 0)}";
-        //_startEndDisplay.color = SpaceshipVisualController.GetColor(playerData.Object.InputAuthority.PlayerId);
+        //_startEndDisplay.color = PlayerVisualController.GetColor(playerData.Object.InputAuthority.PlayerId);
 
         // --- Host
         // Shutdowns the current game session.

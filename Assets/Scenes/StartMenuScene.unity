@@ -668,7 +668,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _networkRunnerPrefab: {fileID: 4348269882062334018, guid: 5e2251f49eca175458ed43f3e0c44cba, type: 3}
   _playerDataPrefab: {fileID: 1052969513734607441, guid: 52c3b7d731aab684b9694a26efbd3520, type: 3}
-  _gameSceneName: GameTestScene
+  _gameSceneName: GameScene
 --- !u!1 &1200168068
 GameObject:
   m_ObjectHideFlags: 0
@@ -782,7 +782,7 @@ GameObject:
   - component: {fileID: 1544684854}
   - component: {fileID: 1544684853}
   m_Layer: 0
-  m_Name: Square
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -826,8 +826,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1692475027
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.4716981, g: 0.4227483, b: 0.4227483, a: 1}

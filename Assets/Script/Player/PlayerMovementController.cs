@@ -4,18 +4,17 @@ using Fusion;
 using Fusion.Addons.Physics;
 using UnityEngine;
 
-// The class is dedicated to controlling the Spaceship's movement in 2D
-public class SpaceshipMovementController : NetworkBehaviour
+// The class is dedicated to controlling the Player's movement in 2D
+public class PlayerMovementController : NetworkBehaviour
 {
     // Game Session AGNOSTIC Settings
-    [SerializeField] private float _rotationSpeed = 90.0f;
     [SerializeField] private float _movementSpeed = 2000.0f;
     [SerializeField] private float _maxSpeed = 200.0f;
 
     // Local Runtime references
     private Rigidbody2D _rigidbody = null;  // The Unity Rigidbody2D (RB) is automatically synchronized across the network thanks to the NetworkRigidbody2D (NRB) component.
 
-    private SpaceshipController _spaceshipController = null;
+    private PlayerController _playerController = null;
 
     // Game Session SPECIFIC Settings
     [Networked] private float _screenBoundaryX { get; set; }
@@ -26,7 +25,7 @@ public class SpaceshipMovementController : NetworkBehaviour
         // --- Host & Client
         // Set the local runtime references.
         _rigidbody = GetComponent<Rigidbody2D>();
-        _spaceshipController = GetComponent<SpaceshipController>();
+        _playerController = GetComponent<PlayerController>();
 
         // --- Host
         // The Game Session SPECIFIC settings are initialized
@@ -38,8 +37,8 @@ public class SpaceshipMovementController : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        // Bail out of FUN() if this spaceship does not currently accept input
-        if (_spaceshipController.AcceptInput == false) return;
+        // Bail out of FUN() if this player does not currently accept input
+        if (_playerController.AcceptInput == false) return;
 
         // GetInput() can only be called from NetworkBehaviours.
         // In SimulationBehaviours, either TryGetInputForPlayer<T>() or GetInputForPlayer<T>() has to be called.
@@ -52,15 +51,13 @@ public class SpaceshipMovementController : NetworkBehaviour
         CheckExitScreen();
     }
 
-    // Moves the spaceship RB using the input for the client with InputAuthority over the object
+    // Moves the player RB using the input for the client with InputAuthority over the object
     private void Move(PlayerInput input)
     {
-        // Adjust rotation on the 2D plane (rotation around the Z-axis)
-
-        // Calculate translation based on forward direction and input
+        // Calculate direction
         Vector2 direction =  (transform.up * input.VerticalInput + transform.right * input.HorizontalInput);
 
-        // Apply direct translation without sliding
+        // Apply direct translation
         _rigidbody.velocity = direction.normalized * _movementSpeed * Runner.DeltaTime;
 
         // Clamp the velocity to the maximum speed, if necessary
@@ -78,7 +75,7 @@ public class SpaceshipMovementController : NetworkBehaviour
 
         if (Mathf.Abs(position.x) < _screenBoundaryX && Mathf.Abs(position.y) < _screenBoundaryY) return;
 
-        // Wrap around on the X and Y axes if the spaceship goes beyond screen boundaries
+        // Wrap around on the X and Y axes if the player goes beyond screen boundaries
         if (Mathf.Abs(position.x) > _screenBoundaryX)
         {
             position.x = -Mathf.Sign(position.x) * _screenBoundaryX;

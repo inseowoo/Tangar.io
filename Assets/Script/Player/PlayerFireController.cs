@@ -7,8 +7,8 @@ using UnityEngine;
 using NetworkTransform = Fusion.NetworkTransform;
 
 
-// The class is dedicated to controlling the Spaceship's Firing
-public class SpaceshipFireController : NetworkBehaviour
+// The class is dedicated to controlling the Player's Firing
+public class PlayerFireController : NetworkBehaviour
 {
     // Game Session AGNOSTIC Settings
     [SerializeField] private float _delayBetweenShots = 0.2f;
@@ -16,7 +16,7 @@ public class SpaceshipFireController : NetworkBehaviour
 
     // Local Runtime references
     private Rigidbody2D _rigidbody = null;
-    private SpaceshipController _spaceshipController = null;
+    private PlayerController _playerController = null;
 
     // Game Session SPECIFIC Settings
     [Networked] private NetworkButtons _buttonsPrevious { get; set; }
@@ -27,16 +27,16 @@ public class SpaceshipFireController : NetworkBehaviour
         // --- Host & Client
         // Set the local runtime references.
         _rigidbody = GetComponent<Rigidbody2D>();
-        _spaceshipController = GetComponent<SpaceshipController>();
+        _playerController = GetComponent<PlayerController>();
     }
 
     public override void FixedUpdateNetwork()
     {
-        // Bail out of FUN() if this spaceship does not currently accept input
-        if (_spaceshipController.AcceptInput == false) return;
+        // Bail out of FUN() if this player does not currently accept input
+        if (_playerController.AcceptInput == false) return;
 
         // Bail out of FUN() if this Client does not have InputAuthority over this object or
-        // if no SpaceshipInput struct is available for this tick
+        // if no PlayerInput struct is available for this tick
         if (GetInput<PlayerInput>(out var input) == false) return;
 
         Fire(input);
@@ -54,7 +54,7 @@ public class SpaceshipFireController : NetworkBehaviour
         _buttonsPrevious = input.Buttons;
     }
 
-    // Spawns a bullet which will be travelling in the direction the spaceship is facing
+    // Spawns a bullet which will be travelling in the direction the player is facing
     private void SpawnBullet()
     {
         if (_shootCooldown.ExpiredOrNotRunning(Runner) == false || !Runner.CanSpawn) return;

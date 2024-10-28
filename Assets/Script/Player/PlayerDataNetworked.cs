@@ -8,7 +8,7 @@ using Fusion;
 public class PlayerDataNetworked : NetworkBehaviour
 {
     // Global static setting
-    private const int STARTING_LIVES = 3;
+    private const int STARTING_LIVES = 1;
 
     // Local Runtime references
     //private PlayerOverviewPanel _overviewPanel = null;

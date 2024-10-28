@@ -7,19 +7,21 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-    // This class controls the lifecycle of the spaceship
-public class SpaceshipController : NetworkBehaviour
+    // This class controls the lifecycle of the player
+public class PlayerController : NetworkBehaviour
 {
     // Game Session AGNOSTIC Settings
     [SerializeField] private float _respawnDelay = 4.0f;
-    [SerializeField] private float _spaceshipDamageRadius = 2.5f;
-    [SerializeField] private LayerMask _asteroidCollisionLayer;
+    [SerializeField] private float _playerDamageRadius = 2.5f;
+    [SerializeField] private LayerMask _tanmakCollisionLayer;
+    [SerializeField] private LayerMask _playerCollisionLayer;
+    [SerializeField] private LayerMask _itemCollisionLayer;
 
     // Local Runtime references
     private ChangeDetector _changeDetector;
     private Rigidbody2D _rigidbody = null;
     private PlayerDataNetworked _playerDataNetworked = null;
-    //private SpaceshipVisualController _visualController = null;
+    //private PlayerVisualController _visualController = null;
 
     private List<LagCompensatedHit> _lagCompensatedHits = new List<LagCompensatedHit>();
 
@@ -38,7 +40,7 @@ public class SpaceshipController : NetworkBehaviour
         // Set the local runtime references.
         _rigidbody = GetComponent<Rigidbody2D>();
         _playerDataNetworked = GetComponent<PlayerDataNetworked>();
-        //_visualController = GetComponent<SpaceshipVisualController>();
+        //_visualController = GetComponent<PlayerVisualController>();
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
 
         //_visualController.SetColorFromPlayerID(Object.InputAuthority.PlayerId);
@@ -70,7 +72,7 @@ public class SpaceshipController : NetworkBehaviour
 
     //private void ToggleVisuals(bool wasAlive, bool isAlive)
     //{
-    //    // Check if the spaceship was just brought to life
+    //    // Check if the player was just brought to life
     //    if (wasAlive == false && isAlive == true)
     //    {
     //        _visualController.TriggerSpawn();
@@ -84,32 +86,33 @@ public class SpaceshipController : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        // Checks if the spaceship is ready to be respawned.
+        // Checks if the player is ready to be respawned.
         if (_respawnTimer.Expired(Runner))
         {
             _isAlive = true;
             _respawnTimer = default;
         }
 
-        // Checks if the spaceship got hit by an asteroid
-        if (_isAlive && HasHitAsteroid())
+        // Checks if the player got hit by an tanmak
+        if (_isAlive && HasHitTanmak())
         {
-            ShipWasHit();
+            PlayerWasHit();
         }
     }
 
-    // Check asteroid collision using a lag compensated OverlapSphere
-    private bool HasHitAsteroid()
+    // Check tanmak collision using a lag compensated OverlapSphere
+    private bool HasHitTanmak()
     {
         _lagCompensatedHits.Clear();
 
-        // Get Collision From MaskLayer
-        var count = Runner.LagCompensation.OverlapSphere(_rigidbody.position, _spaceshipDamageRadius,
+        // Get Collisions From MaskLayer
+        var count = Runner.LagCompensation.OverlapSphere(_rigidbody.position, _playerDamageRadius,
             Object.InputAuthority, _lagCompensatedHits,
-            _asteroidCollisionLayer.value);
+            _tanmakCollisionLayer.value);
 
         if (count <= 0) return false;
 
+        // Sort by Distance
         _lagCompensatedHits.SortDistance();
 
         // For Debug
@@ -131,13 +134,13 @@ public class SpaceshipController : NetworkBehaviour
         return false;
     }
 
-    // Toggle the _isAlive boolean if the spaceship was hit and check whether the player has any lives left.
+    // Toggle the _isAlive boolean if the player was hit and check whether the player has any lives left.
     // If they do, then the _respawnTimer is activated.
-    private void ShipWasHit()
+    private void PlayerWasHit()
     {
         _isAlive = false;
 
-        ResetShip();
+        ResetPlayer();
 
         // ---- Host Only
         if (Object.HasStateAuthority == false) return;
@@ -156,8 +159,8 @@ public class SpaceshipController : NetworkBehaviour
         //FindObjectOfType<GameStateController>().CheckIfGameHasEnded();
     }
 
-    // Resets the spaceships movement velocity
-    private void ResetShip()
+    // Resets the players movement velocity
+    private void ResetPlayer()
     {
         _rigidbody.velocity = Vector2.zero;
         _rigidbody.angularVelocity = 0f;

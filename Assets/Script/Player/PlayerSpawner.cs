@@ -2,12 +2,12 @@ using Fusion;
 using UnityEngine;
 
 
-    // The SpaceshipSpawner, just like the AsteroidSpawner, only executes on the Host.
+    // The PlayerSpawner, just like the AsteroidSpawner, only executes on the Host.
     // Therefore none of its parameters need to be [Networked].
-public class SpaceshipSpawner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
+public class PlayerSpawner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 {
-    // References to the NetworkObject prefab to be used for the players' spaceships.
-    [SerializeField] private NetworkPrefabRef _spaceshipNetworkPrefab = NetworkPrefabRef.Empty;
+    // References to the NetworkObject prefab to be used for the players' players.
+    [SerializeField] private NetworkPrefabRef _playerNetworkPrefab = NetworkPrefabRef.Empty;
 
     private bool _gameIsReady = false;
     private GameStateController _gameStateController = null;
@@ -22,52 +22,50 @@ public class SpaceshipSpawner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     }
 
     // The spawner is started when the GameStateController switches to GameState.Running.
-    public void StartSpaceshipSpawner(GameStateController gameStateController)
+    public void StartPlayerSpawner(GameStateController gameStateController)
     {
-        UnityEngine.Debug.LogWarning("StartSpaceshipSpawner");
         _gameIsReady = true;
         _gameStateController = gameStateController;
         foreach (var player in Runner.ActivePlayers)
         {
-            SpawnSpaceship(player);
+            SpawnPlayer(player);
         }
     }
 
-    // Spawns a new spaceship if a client joined after the game already started
+    // Spawns a new player if a client joined after the game already started
     public void PlayerJoined(PlayerRef player)
     {
-        UnityEngine.Debug.LogWarning("PlayerJoined");
         if (_gameIsReady == false) return;
-        SpawnSpaceship(player);
+        SpawnPlayer(player);
     }
 
-    // Spawns a spaceship for a player.
+    // Spawns a player for a player.
     // The spawn point is chosen in the _spawnPoints array using the implicit playerRef to int conversion 
-    private void SpawnSpaceship(PlayerRef player)
+    private void SpawnPlayer(PlayerRef player)
     {
         // Modulo is used in case there are more players than spawn points.
         int index = player.PlayerId % _spawnPoints.Length;
         var spawnPosition = _spawnPoints[index].transform.position;
-        UnityEngine.Debug.LogWarning("Hi");
-        var playerObject = Runner.Spawn(_spaceshipNetworkPrefab, spawnPosition, Quaternion.identity, player);
+
+        var playerObject = Runner.Spawn(_playerNetworkPrefab, spawnPosition, Quaternion.identity, player);
         // Set Player Object to facilitate access across systems.
         Runner.SetPlayerObject(player, playerObject);
 
-        // Add the new spaceship to the players to be tracked for the game end check.
+        // Add the new player to the players to be tracked for the game end check.
         _gameStateController.TrackNewPlayer(playerObject.GetComponent<PlayerDataNetworked>().Id);
     }
 
-    // Despawns the spaceship associated with a player when their client leaves the game session.
+    // Despawns the player associated with a player when their client leaves the game session.
     public void PlayerLeft(PlayerRef player)
     {
-        DespawnSpaceship(player);
+        DespawnPlayer(player);
     }
 
-    private void DespawnSpaceship(PlayerRef player)
+    private void DespawnPlayer(PlayerRef player)
     {
-        if (Runner.TryGetPlayerObject(player, out var spaceshipNetworkObject))
+        if (Runner.TryGetPlayerObject(player, out var playerNetworkObject))
         {
-            Runner.Despawn(spaceshipNetworkObject);
+            Runner.Despawn(playerNetworkObject);
         }
 
         // Reset Player Object
