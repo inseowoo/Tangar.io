@@ -22,6 +22,7 @@ public class PlayerFireController : NetworkBehaviour
     [Networked] private NetworkButtons _buttonsPrevious { get; set; }
     [Networked] private TickTimer _shootCooldown { get; set; }
 
+    private Vector2 _lastFacingDirection = Vector2.up;
     public override void Spawned()
     {
         // --- Host & Client
@@ -50,6 +51,11 @@ public class PlayerFireController : NetworkBehaviour
         {
             SpawnBullet();
         }
+        Vector2 newDirection = new Vector2(input.HorizontalInput, input.VerticalInput);
+        if (newDirection != Vector2.zero)
+        {
+            _lastFacingDirection = newDirection.normalized;
+        }
 
         _buttonsPrevious = input.Buttons;
     }
@@ -59,11 +65,19 @@ public class PlayerFireController : NetworkBehaviour
     {
         if (_shootCooldown.ExpiredOrNotRunning(Runner) == false || !Runner.CanSpawn) return;
 
-        // Spawn the bullet at the 2D position with the z-axis rotation for 2D space
-        Runner.Spawn(_bullet, _rigidbody.position, Quaternion.Euler(0, 0, _rigidbody.rotation), Object.InputAuthority);
+        // Determine the bullet direction based on player¡¯s current movement direction
+        Vector2 bulletDirection = _lastFacingDirection;
+        Debug.Log(bulletDirection);
+
+        // Spawn the bullet at the player¡¯s position with no rotation
+        BulletBehaviour bullet = Runner.Spawn(_bullet, _rigidbody.position, Quaternion.identity, Object.InputAuthority).GetComponent<BulletBehaviour>();
+
+        // Set the bullet¡¯s direction
+        bullet.SetDirection(bulletDirection);
 
         _shootCooldown = TickTimer.CreateFromSeconds(Runner, _delayBetweenShots);
     }
+
 
 
 }

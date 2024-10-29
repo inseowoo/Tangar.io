@@ -6,10 +6,12 @@ public class BulletBehaviour : NetworkBehaviour
     // Settings
     [SerializeField] private float _maxLifetime = 3.0f;
     [SerializeField] private float _speed = 200.0f;
-    [SerializeField] private LayerMask _asteroidLayer;
+    //[SerializeField] private LayerMask _asteroidLayer;
 
     // The countdown for a bullet's lifetime.
     [Networked] private TickTimer _currentLifetime { get; set; }
+
+    private Vector2 _direction;
 
     public override void Spawned()
     {
@@ -22,9 +24,13 @@ public class BulletBehaviour : NetworkBehaviour
     public override void FixedUpdateNetwork()
     {
         // Move the bullet in the direction it was spawned (player's facing direction)
-        transform.Translate(transform.up * _speed * Runner.DeltaTime, Space.World);
+        transform.Translate((Vector3)_direction * _speed * Runner.DeltaTime, Space.World);
 
         CheckLifetime();
+    }
+    public void SetDirection(Vector2 direction)
+    {
+        _direction = direction.normalized;
     }
 
     // If the bullet exceeds its lifetime, it gets destroyed
