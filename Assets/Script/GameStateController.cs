@@ -94,7 +94,7 @@ public class GameStateController : NetworkBehaviour
         if (_timer.ExpiredOrNotRunning(Runner) == false) return;
         // Starts the Player and Asteroids spawners once the game start delay has expired
         FindObjectOfType<PlayerSpawner>().StartPlayerSpawner(this);
-        //FindObjectOfType<AsteroidSpawner>().StartAsteroidSpawner();
+        FindObjectOfType<AsteroidSpawner>().StartAsteroidSpawner();
         // Switches to the Running GameState and sets the time to the length of a game session
         _gameState = GameState.Running;
         _timer = TickTimer.CreateFromSeconds(Runner, _gameSessionLength);
