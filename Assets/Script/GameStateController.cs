@@ -20,8 +20,8 @@ public class GameStateController : NetworkBehaviour
     [SerializeField] private float _endDelay = 4.0f;
     [SerializeField] private float _gameSessionLength = 180.0f;
 
-    //[SerializeField] private TextMeshProUGUI _startEndDisplay = null;
-    //[SerializeField] private TextMeshProUGUI _ingameTimerDisplay = null;
+    [SerializeField] private TextMeshProUGUI _startEndDisplay = null;
+    [SerializeField] private TextMeshProUGUI _ingameTimerDisplay = null;
 
     [Networked] private TickTimer _timer { get; set; }
     [Networked] private GameState _gameState { get; set; }
@@ -35,8 +35,8 @@ public class GameStateController : NetworkBehaviour
         // --- This section is for all information which has to be locally initialized based on the networked game state
         // --- when a CLIENT joins a game
 
-        //_startEndDisplay.gameObject.SetActive(true);
-        //_ingameTimerDisplay.gameObject.SetActive(false);
+        _startEndDisplay.gameObject.SetActive(true);
+        _ingameTimerDisplay.gameObject.SetActive(false);
 
         // If the game has already started, find all currently active players' PlayerDataNetworked component Ids
         if (_gameState != GameState.Starting)
@@ -87,8 +87,8 @@ public class GameStateController : NetworkBehaviour
     {
         // --- Host & Client
         // Display the remaining time until the game starts in seconds (rounded down to the closest full second)
+        _startEndDisplay.text = $"Game Starts In {Mathf.RoundToInt(_timer.RemainingTime(Runner) ?? 0)}";
 
-        //_startEndDisplay.text = $"Game Starts In {Mathf.RoundToInt(_timer.RemainingTime(Runner) ?? 0)}";
         // --- Host
         if (Object.HasStateAuthority == false) return;
         if (_timer.ExpiredOrNotRunning(Runner) == false) return;
@@ -104,10 +104,14 @@ public class GameStateController : NetworkBehaviour
     {
         // --- Host & Client
         // Display the remaining time until the game ends in seconds (rounded down to the closest full second)
-        //_startEndDisplay.gameObject.SetActive(false);
-        //_ingameTimerDisplay.gameObject.SetActive(true);
-        //_ingameTimerDisplay.text =
-        //    $"{Mathf.RoundToInt(_timer.RemainingTime(Runner) ?? 0).ToString("000")} seconds left";
+        _startEndDisplay.gameObject.SetActive(false);
+        _ingameTimerDisplay.gameObject.SetActive(true);
+        _ingameTimerDisplay.text =
+            $"{Mathf.RoundToInt(_timer.RemainingTime(Runner) ?? 0).ToString("000")} seconds left";
+
+        if (_timer.ExpiredOrNotRunning(Runner) == false) return;
+
+        CheckIfGameHasEnded();
     }
 
     private void UpdateEndingDisplay()
@@ -118,11 +122,12 @@ public class GameStateController : NetworkBehaviour
 
         if (Runner.TryFindBehaviour(_winner, out PlayerDataNetworked playerData) == false) return;
 
-        //_startEndDisplay.gameObject.SetActive(true);
-        //_ingameTimerDisplay.gameObject.SetActive(false);
-        //_startEndDisplay.text =
-        //    $"{playerData.NickName} won with {playerData.Score} points. Disconnecting in {Mathf.RoundToInt(_timer.RemainingTime(Runner) ?? 0)}";
-        //_startEndDisplay.color = PlayerVisualController.GetColor(playerData.Object.InputAuthority.PlayerId);
+        _startEndDisplay.gameObject.SetActive(true);
+        _ingameTimerDisplay.gameObject.SetActive(false);
+        _startEndDisplay.text =
+            $"{playerData.NickName} won with {playerData.Score} points. Disconnecting in {Mathf.RoundToInt(_timer.RemainingTime(Runner) ?? 0)}";
+        _startEndDisplay.color = new Color(1.0f, 0f, 0f);
+        // _startEndDisplay.color = PlayerVisualController.GetColor(playerData.Object.InputAuthority.PlayerId);
 
         // --- Host
         // Shutdowns the current game session.
@@ -137,36 +142,40 @@ public class GameStateController : NetworkBehaviour
     {
         if (Object.HasStateAuthority == false) return;
 
-        int playersAlive = 0;
+        //int playersAlive = 0;
+        //UnityEngine.Debug.Log("Hi");
+        //for (int i = 0; i < _playerDataNetworkedIds.Count; i++)
+        //{
+        //    if (Runner.TryFindBehaviour(_playerDataNetworkedIds[i],
+        //            out PlayerDataNetworked playerDataNetworkedComponent) == false)
+        //    {
+        //        _playerDataNetworkedIds.RemoveAt(i);
+        //        i--;
+        //        continue;
+        //    }
 
-        for (int i = 0; i < _playerDataNetworkedIds.Count; i++)
-        {
-            if (Runner.TryFindBehaviour(_playerDataNetworkedIds[i],
-                    out PlayerDataNetworked playerDataNetworkedComponent) == false)
-            {
-                _playerDataNetworkedIds.RemoveAt(i);
-                i--;
-                continue;
-            }
+        //    if (playerDataNetworkedComponent.Lives > 0) playersAlive++;
+        //}
+        //UnityEngine.Debug.Log(playersAlive);
 
-            if (playerDataNetworkedComponent.Lives > 0) playersAlive++;
-        }
-
-        // If more than 1 player is left alive, the game continues.
-        // If only 1 player is left, the game ends immediately.
-        if (playersAlive > 1 || (Runner.ActivePlayers.Count() == 1 && playersAlive == 1)) return;
-
+        //// If more than 1 player is left alive, the game continues.
+        //// If only 1 player is left, the game ends immediately.
+        //if (playersAlive > 1 || (Runner.ActivePlayers.Count() == 1 && playersAlive == 1)) return;
+        //UnityEngine.Debug.Log("Hi");
+        int MaxScore = 0;
         foreach (var playerDataNetworkedId in _playerDataNetworkedIds)
         {
             if (Runner.TryFindBehaviour(playerDataNetworkedId,
                     out PlayerDataNetworked playerDataNetworkedComponent) ==
                 false) continue;
 
-            if (playerDataNetworkedComponent.Lives > 0 == false) continue;
+            if (playerDataNetworkedComponent.Score > MaxScore == false) continue;
 
+            MaxScore = playerDataNetworkedComponent.Score;
             _winner = playerDataNetworkedId;
         }
 
+        UnityEngine.Debug.Log(_winner);
         if (_winner == default) // when playing alone in host mode this marks the own player as winner
         {
             _winner = _playerDataNetworkedIds[0];
@@ -177,10 +186,11 @@ public class GameStateController : NetworkBehaviour
 
     private void GameHasEnded()
     {
+        UnityEngine.Debug.Log("Game Ended!");
         _timer = TickTimer.CreateFromSeconds(Runner, _endDelay);
         _gameState = GameState.Ending;
 
-        _uiManager.EndGamePanel.SetActive(true);
+        // _uiManager.EndGamePanel.SetActive(true);
     }
 
     public void TrackNewPlayer(NetworkBehaviourId playerDataNetworkedId)

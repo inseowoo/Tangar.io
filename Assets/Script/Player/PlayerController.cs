@@ -21,7 +21,7 @@ public class PlayerController : NetworkBehaviour
     private ChangeDetector _changeDetector;
     private Rigidbody2D _rigidbody = null;
     private PlayerDataNetworked _playerDataNetworked = null;
-    //private PlayerVisualController _visualController = null;
+    private PlayerVisualController _visualController = null;
 
     private List<LagCompensatedHit> _lagCompensatedHits = new List<LagCompensatedHit>();
 
@@ -40,10 +40,10 @@ public class PlayerController : NetworkBehaviour
         // Set the local runtime references.
         _rigidbody = GetComponent<Rigidbody2D>();
         _playerDataNetworked = GetComponent<PlayerDataNetworked>();
-        //_visualController = GetComponent<PlayerVisualController>();
+        _visualController = GetComponent<PlayerVisualController>();
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
 
-        //_visualController.SetColorFromPlayerID(Object.InputAuthority.PlayerId);
+        _visualController.SetColorFromPlayerID(Object.InputAuthority.PlayerId);
 
         debug_text = GameObject.FindObjectOfType<DebugText>();
 
@@ -64,25 +64,25 @@ public class PlayerController : NetworkBehaviour
                 case nameof(_isAlive):
                     var reader = GetPropertyReader<NetworkBool>(nameof(_isAlive));
                     var (previous, current) = reader.Read(previousBuffer, currentBuffer);
-                    //ToggleVisuals(previous, current);
+                    ToggleVisuals(previous, current);
                     break;
             }
         }
     }
 
-    //private void ToggleVisuals(bool wasAlive, bool isAlive)
-    //{
-    //    // Check if the player was just brought to life
-    //    if (wasAlive == false && isAlive == true)
-    //    {
-    //        _visualController.TriggerSpawn();
-    //    }
-    //    // or whether it just got destroyed.
-    //    else if (wasAlive == true && isAlive == false)
-    //    {
-    //        _visualController.TriggerDestruction();
-    //    }
-    //}
+    private void ToggleVisuals(bool wasAlive, bool isAlive)
+    {
+        // Check if the player was just brought to life
+        if (wasAlive == false && isAlive == true)
+        {
+            _visualController.TriggerSpawn();
+        }
+        // or whether it just got destroyed.
+        else if (wasAlive == true && isAlive == false)
+        {
+            _visualController.TriggerDestruction();
+        }
+    }
 
     public override void FixedUpdateNetwork()
     {
@@ -91,6 +91,7 @@ public class PlayerController : NetworkBehaviour
         {
             _isAlive = true;
             _respawnTimer = default;
+            FindObjectOfType<PlayerSpawner>().RespawnPlayer(gameObject);
         }
 
         // Checks if the player got hit by an tanmak
@@ -145,16 +146,20 @@ public class PlayerController : NetworkBehaviour
         // ---- Host Only
         if (Object.HasStateAuthority == false) return;
 
-        if (_playerDataNetworked.Lives > 1)
-        {
-            _respawnTimer = TickTimer.CreateFromSeconds(Runner, _respawnDelay);
-        }
-        else
-        {
-            _respawnTimer = default;
-        }
+        _respawnTimer = TickTimer.CreateFromSeconds(Runner, _respawnDelay);
 
-        _playerDataNetworked.SubtractLife();
+        _playerDataNetworked.ResetScore();
+
+        //if (_playerDataNetworked.Lives > 1)
+        //{
+        //    _respawnTimer = TickTimer.CreateFromSeconds(Runner, _respawnDelay);
+        //}
+        //else
+        //{
+        //    _respawnTimer = default;
+        //}
+
+        // _playerDataNetworked.SubtractLife();
 
         //FindObjectOfType<GameStateController>().CheckIfGameHasEnded();
     }
