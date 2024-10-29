@@ -1,4 +1,5 @@
 using Fusion;
+using System;
 using UnityEngine;
 
 
@@ -44,7 +45,7 @@ public class PlayerSpawner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     private void SpawnPlayer(PlayerRef player)
     {
         // Modulo is used in case there are more players than spawn points.
-        int index = player.PlayerId % _spawnPoints.Length;
+        int index = UnityEngine.Random.Range(0, _spawnPoints.Length);
         var spawnPosition = _spawnPoints[index].transform.position;
 
         var playerObject = Runner.Spawn(_playerNetworkPrefab, spawnPosition, Quaternion.identity, player);
@@ -70,5 +71,13 @@ public class PlayerSpawner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
         // Reset Player Object
         Runner.SetPlayerObject(player, null);
+    }
+
+    public void RespawnPlayer(GameObject playerObject)
+    {
+        int index = UnityEngine.Random.Range(0, _spawnPoints.Length);
+        var spawnPosition = _spawnPoints[index].transform.position;
+
+        playerObject.transform.position = spawnPosition;
     }
 }

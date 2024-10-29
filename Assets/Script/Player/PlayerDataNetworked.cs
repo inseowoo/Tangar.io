@@ -92,6 +92,11 @@ public class PlayerDataNetworked : NetworkBehaviour
         Score += points;
     }
 
+    public void ResetScore()
+    {
+        Score = 0;
+    }
+
     // Decrease the current Lives by 1
     public void SubtractLife()
     {
