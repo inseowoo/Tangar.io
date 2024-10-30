@@ -139,9 +139,6 @@ public class PlayerController : NetworkBehaviour
         LagCompensatedHit firstHit = GetFirstHit(_tanmakCollisionLayer);
         if (firstHit.Equals(default(LagCompensatedHit))) return false;
 
-        // For Debug
-        DisplayCollisionDebug(firstHit.GameObject);
-
         // Check Collider
 
         var tanmak = firstHit.GameObject.GetComponent<AsteroidBehaviour>();
@@ -150,6 +147,9 @@ public class PlayerController : NetworkBehaviour
             if (tanmak.IsAlive == false) return false;
 
             tanmak.HitAsteroid(Object.InputAuthority);
+
+            // For Debug
+            DisplayCollisionDebug(firstHit.GameObject);
 
             return true;
         }
@@ -162,9 +162,6 @@ public class PlayerController : NetworkBehaviour
         LagCompensatedHit firstHit = GetFirstHit(_bulletCollisionLayer);
         if (firstHit.Equals(default(LagCompensatedHit))) return false;
 
-        // For Debug
-        DisplayCollisionDebug(firstHit.GameObject);
-
         // Check Collider
         var bullet = firstHit.GameObject.GetComponent<BulletBehaviour>();
         if (bullet)
@@ -172,6 +169,9 @@ public class PlayerController : NetworkBehaviour
             if (bullet._authority == Object.InputAuthority) return false;
 
             bullet.Hit();
+
+            // For Debug
+            DisplayCollisionDebug(firstHit.GameObject);
 
             return true;
         }
