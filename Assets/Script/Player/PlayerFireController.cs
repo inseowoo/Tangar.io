@@ -75,6 +75,9 @@ public class PlayerFireController : NetworkBehaviour
         // Set the bullet¡¯s direction
         bullet.SetDirection(bulletDirection);
 
+        // Set bullet's authority
+        bullet.SetAuthority(Object.InputAuthority);
+
         _shootCooldown = TickTimer.CreateFromSeconds(Runner, _delayBetweenShots);
     }
 

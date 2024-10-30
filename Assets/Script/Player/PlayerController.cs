@@ -14,6 +14,7 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float _respawnDelay = 4.0f;
     [SerializeField] private float _playerDamageRadius = 2.5f;
     [SerializeField] private LayerMask _tanmakCollisionLayer;
+    [SerializeField] private LayerMask _bulletCollisionLayer;
     [SerializeField] private LayerMask _playerCollisionLayer;
     [SerializeField] private LayerMask _itemCollisionLayer;
 
@@ -94,63 +95,87 @@ public class PlayerController : NetworkBehaviour
             FindObjectOfType<PlayerSpawner>().RespawnPlayer(Object.InputAuthority);
         }
 
-        // Checks if the player got hit by an tanmak
-        if (_isAlive && HasHitTanmak())
+        // Checks if the player got hit by an bullet
+        if (_isAlive && HasHitBullet())
         {
             PlayerWasHit();
         }
+
+        // Checks if the player got hit by an tanmak
+        if (_isAlive && HasHitTanmak())
+        {
+            // grow
+        }
     }
 
-    // Check tanmak collision using a lag compensated OverlapSphere
-    private bool HasHitTanmak()
+    private LagCompensatedHit GetFirstHit(LayerMask mask)
     {
         _lagCompensatedHits.Clear();
 
         // Get Collisions From MaskLayer
         var count = Runner.LagCompensation.OverlapSphere(_rigidbody.position, _playerDamageRadius,
             Object.InputAuthority, _lagCompensatedHits,
-            _tanmakCollisionLayer.value);
+            mask.value);
 
-        if (count <= 0) return false;
+        if (count <= 0) return default;
 
         // Sort by Distance
         _lagCompensatedHits.SortDistance();
 
+        return _lagCompensatedHits[0];
+    }
+
+    // Check tanmak collision using a lag compensated OverlapSphere
+    private bool HasHitTanmak()
+    {
+        LagCompensatedHit firstHit = GetFirstHit(_tanmakCollisionLayer);
+        if (firstHit.Equals(default(LagCompensatedHit))) return false;
+
         // For Debug
-        string txt = $"Collide {this.name} with {_lagCompensatedHits[0].GameObject.name}";
-        UnityEngine.Debug.Log(txt);
-        debug_text.PushDebugText(txt);
+        DisplayCollisionDebug(firstHit.GameObject);
 
         // Check Collider
-        var dummyTanmak = _lagCompensatedHits[0].GameObject.GetComponent<DummyTanmak>();
-        if (dummyTanmak)
-        {
-            if (dummyTanmak._isAlive == false) return false;
 
-            dummyTanmak.Hit();
-
-            return true;
-        }
-
-        var bullet = _lagCompensatedHits[0].GameObject.GetComponent<BulletBehaviour>();
-        if (bullet)
-        {
-            bullet.Hit();
-
-            return true;
-        }
-
-        var tanmak = _lagCompensatedHits[0].GameObject.GetComponent<AsteroidBehaviour>();
+        var tanmak = firstHit.GameObject.GetComponent<AsteroidBehaviour>();
         if (tanmak)
         {
             if (tanmak.IsAlive == false) return false;
 
             tanmak.HitAsteroid(Object.InputAuthority);
 
-            return false;
+            return true;
         }
 
         return false;
+    }
+
+    private bool HasHitBullet()
+    {
+        LagCompensatedHit firstHit = GetFirstHit(_bulletCollisionLayer);
+        if (firstHit.Equals(default(LagCompensatedHit))) return false;
+
+        // For Debug
+        DisplayCollisionDebug(firstHit.GameObject);
+
+        // Check Collider
+        var bullet = firstHit.GameObject.GetComponent<BulletBehaviour>();
+        if (bullet)
+        {
+            if (bullet._authority == Object.InputAuthority) return false;
+
+            bullet.Hit();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private void DisplayCollisionDebug(GameObject colObj)
+    {
+        string txt = $"Collide {this.name} with {colObj.name}";
+        UnityEngine.Debug.Log(txt);
+        debug_text.PushDebugText(txt);
     }
 
     // Toggle the _isAlive boolean if the player was hit and check whether the player has any lives left.

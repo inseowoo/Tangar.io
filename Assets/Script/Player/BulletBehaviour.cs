@@ -10,6 +10,7 @@ public class BulletBehaviour : NetworkBehaviour
 
     // The countdown for a bullet's lifetime.
     [Networked] private TickTimer _currentLifetime { get; set; }
+    [Networked] public PlayerRef _authority { get; private set; }
 
     private Vector2 _direction;
 
@@ -31,6 +32,11 @@ public class BulletBehaviour : NetworkBehaviour
     public void SetDirection(Vector2 direction)
     {
         _direction = direction.normalized;
+    }
+
+    public void SetAuthority(PlayerRef player)
+    {
+        _authority = player;
     }
 
     public void Hit()
