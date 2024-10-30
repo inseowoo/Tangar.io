@@ -410,7 +410,7 @@ MonoBehaviour:
   _uiManager: {fileID: 0}
   _startDelay: 4
   _endDelay: 4
-  _gameSessionLength: 10
+  _gameSessionLength: 60
   _startEndDisplay: {fileID: 318466080}
   _ingameTimerDisplay: {fileID: 1284348255}
 --- !u!1 &1212038193
