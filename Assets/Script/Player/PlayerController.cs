@@ -38,7 +38,7 @@ public class PlayerController : NetworkBehaviour
     private float _minScale = 5.0f;
     private float _maxScale = 20.0f;
 
-    public float _scaleFactor = 0.5f;
+    public float _scaleFactor = 2.0f;
 
     DebugText debug_text;
 
