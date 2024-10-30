@@ -126,8 +126,7 @@ public class GameStateController : NetworkBehaviour
         _ingameTimerDisplay.gameObject.SetActive(false);
         _startEndDisplay.text =
             $"{playerData.NickName} won with {playerData.Score} points. Disconnecting in {Mathf.RoundToInt(_timer.RemainingTime(Runner) ?? 0)}";
-        _startEndDisplay.color = new Color(1.0f, 0f, 0f);
-        // _startEndDisplay.color = PlayerVisualController.GetColor(playerData.Object.InputAuthority.PlayerId);
+        _startEndDisplay.color = PlayerVisualController.GetColor(playerData.Object.InputAuthority.PlayerId);
 
         // --- Host
         // Shutdowns the current game session.

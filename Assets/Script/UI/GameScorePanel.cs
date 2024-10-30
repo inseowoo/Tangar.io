@@ -86,8 +86,8 @@ public class GameScorePanel : NetworkBehaviour
         for (int i = 0; i < _rankInfos.Count; i++)
         {
             _rankText.text +=  (i + 1).ToString() + "\n";
-            _nickText.text = _rankInfos[i].nickname + "\n";
-            _scoreText.text = _rankInfos[i].score.ToString() + "\n";
+            _nickText.text += _rankInfos[i].nickname + "\n";
+            _scoreText.text += _rankInfos[i].score.ToString() + "\n";
         }
     }
 }
