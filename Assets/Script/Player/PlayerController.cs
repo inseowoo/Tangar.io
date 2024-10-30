@@ -106,13 +106,12 @@ public class PlayerController : NetworkBehaviour
         if (_isAlive && HasHitBullet())
         {
             PlayerWasHit();
-            UpdateSize();
         }
 
         // Checks if the player got hit by an tanmak
         if (_isAlive && HasHitTanmak())
         {
-            // grow
+            UpdateSize();
         }
     }
 
