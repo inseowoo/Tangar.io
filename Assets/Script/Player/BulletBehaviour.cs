@@ -33,6 +33,11 @@ public class BulletBehaviour : NetworkBehaviour
         _direction = direction.normalized;
     }
 
+    public void Hit()
+    {
+        Runner.Despawn(Object);
+    }
+
     // If the bullet exceeds its lifetime, it gets destroyed
     private void CheckLifetime()
     {
@@ -40,6 +45,7 @@ public class BulletBehaviour : NetworkBehaviour
 
         Runner.Despawn(Object);
     }
+
     // Check if the bullet will hit an asteroid in the next tick.
     //private bool HasHitAsteroid()
     //{

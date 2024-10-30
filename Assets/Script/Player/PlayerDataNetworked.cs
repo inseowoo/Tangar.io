@@ -11,7 +11,8 @@ public class PlayerDataNetworked : NetworkBehaviour
     private const int STARTING_LIVES = 1;
 
     // Local Runtime references
-    //private PlayerOverviewPanel _overviewPanel = null;
+    private PlayerOverviewPanel _overviewPanel = null;
+    private GameScorePanel _scorePanel = null;
 
     private ChangeDetector _changeDetector;
 
@@ -47,44 +48,48 @@ public class PlayerDataNetworked : NetworkBehaviour
             Score = 0;
         }
 
-        //// --- Host & Client
-        //// Set the local runtime references.
-        //_overviewPanel = FindObjectOfType<PlayerOverviewPanel>();
-        //// Add an entry to the local Overview panel with the information of this spaceship
-        //_overviewPanel.AddEntry(Object.InputAuthority, this);
-            
-        //// Refresh panel visuals in Spawned to set to initial values.
-        //_overviewPanel.UpdateNickName(Object.InputAuthority, NickName.ToString());
-        //_overviewPanel.UpdateLives(Object.InputAuthority, Lives);
-        //_overviewPanel.UpdateScore(Object.InputAuthority, Score);
-            
+        // --- Host & Client
+        // Set the local runtime references.
+        _overviewPanel = FindObjectOfType<PlayerOverviewPanel>();
+        _scorePanel = FindObjectOfType<GameScorePanel>();
+
+        // Add an entry to the local Overview panel with the information of this spaceship
+        _overviewPanel.AddEntry(Object.InputAuthority, this);
+        _scorePanel.AddEntry(Object.InputAuthority, this, true);
+
+        // Refresh panel visuals in Spawned to set to initial values.
+        _overviewPanel.UpdateNickName(Object.InputAuthority, NickName.ToString());
+        _overviewPanel.UpdateLives(Object.InputAuthority, Lives);
+        _overviewPanel.UpdateScore(Object.InputAuthority, Score);
+
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
     }
-        
-    //public override void Render()
-    //{
-    //    foreach (var change in _changeDetector.DetectChanges(this, out var previousBuffer, out var currentBuffer))
-    //    {
-    //        switch (change)
-    //        {
-    //            case nameof(NickName):
-    //                _overviewPanel.UpdateNickName(Object.InputAuthority, NickName.ToString());
-    //                break;
-    //            case nameof(Score):
-    //                _overviewPanel.UpdateScore(Object.InputAuthority, Score);
-    //                break;
-    //            case nameof(Lives):
-    //                _overviewPanel.UpdateLives(Object.InputAuthority, Lives);
-    //                break;
-    //        }
-    //    }
-    //}
+
+    public override void Render()
+    {
+        foreach (var change in _changeDetector.DetectChanges(this, out var previousBuffer, out var currentBuffer))
+        {
+            switch (change)
+            {
+                case nameof(NickName):
+                    _overviewPanel.UpdateNickName(Object.InputAuthority, NickName.ToString());
+                    break;
+                case nameof(Score):
+                    _overviewPanel.UpdateScore(Object.InputAuthority, Score);
+                    _scorePanel.UpdateRankInfo(Object.InputAuthority, this, true);
+                    break;
+                case nameof(Lives):
+                    _overviewPanel.UpdateLives(Object.InputAuthority, Lives);
+                    break;
+            }
+        }
+    }
 
     // Remove the entry in the local Overview panel for this spaceship
-    //public override void Despawned(NetworkRunner runner, bool hasState)
-    //{
-    //    _overviewPanel.RemoveEntry(Object.InputAuthority);
-    //}
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        _overviewPanel.RemoveEntry(Object.InputAuthority);
+    }
 
     // Increase the score by X amount of points
     public void AddToScore(int points)

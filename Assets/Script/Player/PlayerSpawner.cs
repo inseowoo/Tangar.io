@@ -73,8 +73,10 @@ public class PlayerSpawner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         Runner.SetPlayerObject(player, null);
     }
 
-    public void RespawnPlayer(GameObject playerObject)
+    public void RespawnPlayer(PlayerRef player)
     {
+        if (Runner.TryGetPlayerObject(player, out var playerObject) == false) return;
+
         int index = UnityEngine.Random.Range(0, _spawnPoints.Length);
         var spawnPosition = _spawnPoints[index].transform.position;
 

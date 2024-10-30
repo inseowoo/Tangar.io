@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 296755499908981642}
   - component: {fileID: 2866378759069616863}
   - component: {fileID: 1744490279683766165}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Tanmak
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -122,6 +122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea1ee124df644e4fba5311fe6aefb3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _points: 1
 --- !u!50 &8411541252288656721
 Rigidbody2D:
   serializedVersion: 4
@@ -200,8 +201,8 @@ MonoBehaviour:
   m_Script: {fileID: 1014831617, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Type: 0
-  SphereRadius: 0
+  Type: 2
+  SphereRadius: 1
   CapsuleRadius: 0
   BoxExtents: {x: 0, y: 0, z: 0}
   CapsuleExtents: 0

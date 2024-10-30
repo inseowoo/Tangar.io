@@ -9,7 +9,7 @@ public class AsteroidBehaviour : NetworkBehaviour
 {
     // The _points variable can be a local private variable as it will only be used to add points to the score
     // The score itself is networked and any increase or decrease will be propagated automatically.
-    //[SerializeField] private int _points = 1;
+    [SerializeField] private int _points = 1;
 
     // The IsBig variable is Networked as it can be used to evaluate and derive visual information for an asteroid locally.
     //[HideInInspector] [Networked] public NetworkBool IsBig { get; set; }
@@ -38,13 +38,14 @@ public class AsteroidBehaviour : NetworkBehaviour
 
         // If this hit was triggered by a projectile, the player who shot it gets points
         // The player object is retrieved via the Runner.
-        //if (Runner.TryGetPlayerObject(player, out var playerNetworkObject))
-        //{
-        //    playerNetworkObject.GetComponent<PlayerDataNetworked>().AddToScore(_points);
-        //}
+        if (Runner.TryGetPlayerObject(player, out var playerNetworkObject))
+        {
+            playerNetworkObject.GetComponent<PlayerDataNetworked>().AddToScore(_points);
+        }
 
-        _wasHit = true;
-        _despawnTimer = TickTimer.CreateFromSeconds(Runner, .2f);
+        //_wasHit = true;
+        //_despawnTimer = TickTimer.CreateFromSeconds(Runner, .2f);
+        Runner.Despawn(Object);
     }
 
     public override void FixedUpdateNetwork()
@@ -55,14 +56,6 @@ public class AsteroidBehaviour : NetworkBehaviour
             _despawnTimer = TickTimer.None;
 
             Runner.Despawn(Object);
-        }
-    }
-
-    public override void Render()
-    {
-        if (_wasHit && _despawnTimer.IsRunning)
-        {
-            _networkRigidbody.InterpolationTarget.localScale *= .95f;
         }
     }
 }

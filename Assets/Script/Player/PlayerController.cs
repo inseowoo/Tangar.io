@@ -91,7 +91,7 @@ public class PlayerController : NetworkBehaviour
         {
             _isAlive = true;
             _respawnTimer = default;
-            FindObjectOfType<PlayerSpawner>().RespawnPlayer(gameObject);
+            FindObjectOfType<PlayerSpawner>().RespawnPlayer(Object.InputAuthority);
         }
 
         // Checks if the player got hit by an tanmak
@@ -132,6 +132,24 @@ public class PlayerController : NetworkBehaviour
             return true;
         }
 
+        var bullet = _lagCompensatedHits[0].GameObject.GetComponent<BulletBehaviour>();
+        if (bullet)
+        {
+            bullet.Hit();
+
+            return true;
+        }
+
+        var tanmak = _lagCompensatedHits[0].GameObject.GetComponent<AsteroidBehaviour>();
+        if (tanmak)
+        {
+            if (tanmak.IsAlive == false) return false;
+
+            tanmak.HitAsteroid(Object.InputAuthority);
+
+            return false;
+        }
+
         return false;
     }
 
@@ -147,8 +165,6 @@ public class PlayerController : NetworkBehaviour
         if (Object.HasStateAuthority == false) return;
 
         _respawnTimer = TickTimer.CreateFromSeconds(Runner, _respawnDelay);
-
-        _playerDataNetworked.ResetScore();
 
         //if (_playerDataNetworked.Lives > 1)
         //{
@@ -169,5 +185,7 @@ public class PlayerController : NetworkBehaviour
     {
         _rigidbody.velocity = Vector2.zero;
         _rigidbody.angularVelocity = 0f;
+
+        _playerDataNetworked.ResetScore();
     }
 }
