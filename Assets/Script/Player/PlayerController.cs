@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Fusion;
 using Fusion.LagCompensation;
+using JetBrains.Annotations;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.SocialPlatforms.Impl;
 
-    // This class controls the lifecycle of the player
+// This class controls the lifecycle of the player
 public class PlayerController : NetworkBehaviour
 {
     // Game Session AGNOSTIC Settings
@@ -31,6 +33,11 @@ public class PlayerController : NetworkBehaviour
     [Networked] private NetworkBool _isAlive { get; set; }
 
     [Networked] private TickTimer _respawnTimer { get; set; }
+
+    private float _minScale = 5.0f;
+    private float _maxScale = 20.0f;
+
+    public float _scaleFactor = 0.1f;
 
     DebugText debug_text;
 
@@ -98,8 +105,11 @@ public class PlayerController : NetworkBehaviour
         if (_isAlive && HasHitTanmak())
         {
             PlayerWasHit();
+            UpdateSize();
         }
     }
+
+    
 
     // Check tanmak collision using a lag compensated OverlapSphere
     private bool HasHitTanmak()
@@ -187,5 +197,13 @@ public class PlayerController : NetworkBehaviour
         _rigidbody.angularVelocity = 0f;
 
         _playerDataNetworked.ResetScore();
+    }
+
+    private void UpdateSize()
+    {
+        float scale = Mathf.Clamp(_minScale + _playerDataNetworked.Score * _scaleFactor, _minScale, _maxScale);
+        int score = _playerDataNetworked.Score;
+        Debug.Log(score);
+        _rigidbody.transform.localScale = new Vector3(scale, scale, 1);
     }
 }

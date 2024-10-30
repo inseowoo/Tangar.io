@@ -236,7 +236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5e690b5fb1084f5ab1c86457af401d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SyncScale: 0
+  SyncScale: 1
   SyncParent: 1
   _interpolationTarget: {fileID: 0}
   UsePreciseRotation: 0
