@@ -15,7 +15,7 @@ public class PlayerFireController : NetworkBehaviour
     [SerializeField] private NetworkPrefabRef _bullet = NetworkPrefabRef.Empty;
 
     // Local Runtime references
-    private Rigidbody2D _rigidbody = null;
+    private Rigidbody _rigidbody = null;
     private PlayerController _playerController = null;
 
     // Game Session SPECIFIC Settings
@@ -27,7 +27,7 @@ public class PlayerFireController : NetworkBehaviour
     {
         // --- Host & Client
         // Set the local runtime references.
-        _rigidbody = GetComponent<Rigidbody2D>();
+        _rigidbody = GetComponent<Rigidbody>();
         _playerController = GetComponent<PlayerController>();
     }
 

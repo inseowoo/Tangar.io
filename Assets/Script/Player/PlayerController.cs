@@ -104,16 +104,16 @@ public class PlayerController : NetworkBehaviour
         }
 
         // Checks if the player got hit by an bullet
-        if (_isAlive && HasHitBullet())
-        {
-            PlayerWasHit();
-        }
+        //if (_isAlive && HasHitBullet())
+        //{
+        //    PlayerWasHit();
+        //}
 
-        // Checks if the player got hit by an tanmak
-        if (_isAlive && HasHitTanmak())
-        {
-            UpdateSize();
-        }
+        //// Checks if the player got hit by an tanmak
+        //if (_isAlive && HasHitTanmak())
+        //{
+        //    UpdateSize();
+        //}
     }
 
     // Check tanmak collision using a lag compensated OverlapSphere

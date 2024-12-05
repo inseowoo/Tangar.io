@@ -58,16 +58,18 @@ public class AsteroidSpawner : NetworkBehaviour
     {
         if (_spawnDelay.Expired(Runner) == false) return;
 
-        Vector2 direction = Random.insideUnitCircle.normalized; // Random direction
-        Vector2 position = Vector2.zero;
+        Vector3 direction = Random.onUnitSphere; // Random direction in 3D space
+        direction.z = 0; // Lock the Z-axis for 2D gameplay
+        direction.Normalize(); // Ensure it's normalized
+        Vector3 position = Vector3.zero;
 
         if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
         {
-            position = new Vector2(-(Mathf.Sign(direction.x)) * _screenBoundaryX, direction.y * _screenBoundaryY);
+            position = new Vector3(-(Mathf.Sign(direction.x)) * _screenBoundaryX, direction.y * _screenBoundaryY, 0);
         }
         else
         {
-            position = new Vector2(direction.x * _screenBoundaryX, -(Mathf.Sign(direction.y)) * _screenBoundaryY);
+            position = new Vector3(direction.x * _screenBoundaryX, -(Mathf.Sign(direction.y)) * _screenBoundaryY, 0);
         }
 
         position -= position.normalized * 0.1f;
@@ -75,7 +77,7 @@ public class AsteroidSpawner : NetworkBehaviour
 
         var asteroid = Runner.Spawn(_bigAsteroid, position, rotation, PlayerRef.None, (runner, obj) =>
         {
-            var rb = obj.GetComponent<NetworkRigidbody2D>();
+            var rb = obj.GetComponent<NetworkRigidbody3D>();
             if (rb != null)
             {
                 // Assign a random velocity

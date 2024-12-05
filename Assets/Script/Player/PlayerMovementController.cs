@@ -12,7 +12,7 @@ public class PlayerMovementController : NetworkBehaviour
     [SerializeField] private float _maxSpeed = 200.0f;
 
     // Local Runtime references
-    private Rigidbody2D _rigidbody = null;  // The Unity Rigidbody2D (RB) is automatically synchronized across the network thanks to the NetworkRigidbody2D (NRB) component.
+    private Rigidbody _rigidbody = null;  // The Unity Rigidbody2D (RB) is automatically synchronized across the network thanks to the NetworkRigidbody2D (NRB) component.
 
     private PlayerController _playerController = null;
 
@@ -24,7 +24,7 @@ public class PlayerMovementController : NetworkBehaviour
     {
         // --- Host & Client
         // Set the local runtime references.
-        _rigidbody = GetComponent<Rigidbody2D>();
+        _rigidbody = GetComponent<Rigidbody>();
         _playerController = GetComponent<PlayerController>();
 
         // --- Host
@@ -56,9 +56,10 @@ public class PlayerMovementController : NetworkBehaviour
     {
         // Calculate direction
         Vector2 direction =  (transform.up * input.VerticalInput + transform.right * input.HorizontalInput);
+        Vector3 dir = new Vector3(direction.x, direction.y, 0);
 
         // Apply direct translation
-        _rigidbody.velocity = direction.normalized * _movementSpeed * Runner.DeltaTime;
+        _rigidbody.velocity = dir.normalized * _movementSpeed * Runner.DeltaTime;
 
         // Clamp the velocity to the maximum speed, if necessary
         if (_rigidbody.velocity.magnitude > _maxSpeed)

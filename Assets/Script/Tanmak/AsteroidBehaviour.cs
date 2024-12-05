@@ -19,13 +19,13 @@ public class AsteroidBehaviour : NetworkBehaviour
 
     [Networked] private TickTimer _despawnTimer { get; set; }
 
-    private NetworkRigidbody2D _networkRigidbody;
+    private NetworkRigidbody3D _networkRigidbody;
 
     public bool IsAlive => !_wasHit;
 
     public override void Spawned()
     {
-        _networkRigidbody = GetComponent<NetworkRigidbody2D>();
+        _networkRigidbody = GetComponent<NetworkRigidbody3D>();
     }
 
     // When the asteroid gets hit by another object, this method is called to decide what to do next.
