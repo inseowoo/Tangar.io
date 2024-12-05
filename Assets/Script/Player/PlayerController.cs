@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.SocialPlatforms.Impl;
+using UnityEngine.UI;
 
 // This class controls the lifecycle of the player
 public class PlayerController : NetworkBehaviour
@@ -115,32 +116,23 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    private LagCompensatedHit GetFirstHit(LayerMask mask)
+    // Check tanmak collision using a lag compensated OverlapSphere
+    private bool HasHitTanmak()
     {
-        _lagCompensatedHits.Clear();
-
         // Get Collisions From MaskLayer
         var count = Runner.LagCompensation.OverlapSphere(_rigidbody.position, _playerDamageRadius,
-            Object.InputAuthority, _lagCompensatedHits,
-            mask.value);
+            Object.InputAuthority, _lagCompensatedHits, _tanmakCollisionLayer.value);
 
         if (count <= 0) return default;
 
         // Sort by Distance
         _lagCompensatedHits.SortDistance();
 
-        return _lagCompensatedHits[0];
-    }
-
-    // Check tanmak collision using a lag compensated OverlapSphere
-    private bool HasHitTanmak()
-    {
-        LagCompensatedHit firstHit = GetFirstHit(_tanmakCollisionLayer);
-        if (firstHit.Equals(default(LagCompensatedHit))) return false;
+        if (_lagCompensatedHits[0].Equals(default(LagCompensatedHit))) return false;
 
         // Check Collider
 
-        var tanmak = firstHit.GameObject.GetComponent<AsteroidBehaviour>();
+        var tanmak = _lagCompensatedHits[0].GameObject.GetComponent<AsteroidBehaviour>();
         if (tanmak)
         {
             if (tanmak.IsAlive == false) return false;
@@ -148,7 +140,7 @@ public class PlayerController : NetworkBehaviour
             tanmak.HitAsteroid(Object.InputAuthority);
 
             // For Debug
-            DisplayCollisionDebug(firstHit.GameObject);
+            DisplayCollisionDebug(_lagCompensatedHits[0].GameObject);
 
             return true;
         }
@@ -158,11 +150,19 @@ public class PlayerController : NetworkBehaviour
 
     private bool HasHitBullet()
     {
-        LagCompensatedHit firstHit = GetFirstHit(_bulletCollisionLayer);
-        if (firstHit.Equals(default(LagCompensatedHit))) return false;
+        // Get Collisions From MaskLayer
+        var count = Runner.LagCompensation.OverlapSphere(_rigidbody.position, _playerDamageRadius,
+            Object.InputAuthority, _lagCompensatedHits, _bulletCollisionLayer.value);
+
+        if (count <= 0) return default;
+
+        // Sort by Distance
+        _lagCompensatedHits.SortDistance();
+
+        if (_lagCompensatedHits[0].Equals(default(LagCompensatedHit))) return false;
 
         // Check Collider
-        var bullet = firstHit.GameObject.GetComponent<BulletBehaviour>();
+        var bullet = _lagCompensatedHits[0].GameObject.GetComponent<BulletBehaviour>();
         if (bullet)
         {
             if (bullet._authority == Object.InputAuthority) return false;
@@ -170,7 +170,7 @@ public class PlayerController : NetworkBehaviour
             bullet.Hit();
 
             // For Debug
-            DisplayCollisionDebug(firstHit.GameObject);
+            DisplayCollisionDebug(_lagCompensatedHits[0].GameObject);
 
             return true;
         }
