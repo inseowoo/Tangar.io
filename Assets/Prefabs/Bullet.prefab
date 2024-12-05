@@ -13,8 +13,6 @@ GameObject:
   - component: {fileID: 8456384840007276299}
   - component: {fileID: 3291625255357876127}
   - component: {fileID: 8273283999373136680}
-  - component: {fileID: 1127452094542951330}
-  - component: {fileID: -1423250821085671344}
   m_Layer: 8
   m_Name: Bullet
   m_TagString: Untagged
@@ -108,7 +106,6 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 3291625255357876127}
   - {fileID: 8273283999373136680}
-  - {fileID: 1127452094542951330}
 --- !u!114 &3291625255357876127
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,40 +136,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxLifetime: 3
   _speed: 200
---- !u!114 &1127452094542951330
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8204882348119239003}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1039544458, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Config: 3
-  BroadRadius: 0.5
-  Offset: {x: 0, y: 0, z: 0}
-  GizmosColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  Hitboxes: []
---- !u!114 &-1423250821085671344
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8204882348119239003}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1014831617, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Type: 2
-  SphereRadius: 0.5
-  CapsuleRadius: 0
-  BoxExtents: {x: 0, y: 0, z: 0}
-  CapsuleExtents: 0
-  Offset: {x: 0, y: 0, z: 0}
-  Root: {fileID: 0}
-  GizmosColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}

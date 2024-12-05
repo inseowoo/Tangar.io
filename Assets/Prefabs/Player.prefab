@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: 236562031478822525}
   - component: {fileID: 5891901742363557253}
   - component: {fileID: 2070626507157872400}
+  - component: {fileID: 4302426244031162896}
   - component: {fileID: 1097296873059533461}
   m_Layer: 7
   m_Name: Player
@@ -260,6 +261,27 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 1
+--- !u!135 &4302426244031162896
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6877894928816129114}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1097296873059533461
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -272,7 +294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a591d221a634417e9827eb58e17de84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SyncScale: 0
+  SyncScale: 1
   SyncParent: 1
   _interpolationTarget: {fileID: 575124822625235448}
   UsePreciseRotation: 0

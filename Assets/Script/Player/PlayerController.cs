@@ -23,7 +23,7 @@ public class PlayerController : NetworkBehaviour
 
     // Local Runtime references
     private ChangeDetector _changeDetector;
-    private Rigidbody2D _rigidbody = null;
+    private Rigidbody _rigidbody = null;
     private PlayerDataNetworked _playerDataNetworked = null;
     private PlayerVisualController _visualController = null;
 
@@ -47,7 +47,7 @@ public class PlayerController : NetworkBehaviour
     {
         // --- Host & Client
         // Set the local runtime references.
-        _rigidbody = GetComponent<Rigidbody2D>();
+        _rigidbody = GetComponent<Rigidbody>();
         _playerDataNetworked = GetComponent<PlayerDataNetworked>();
         _visualController = GetComponent<PlayerVisualController>();
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
@@ -110,10 +110,10 @@ public class PlayerController : NetworkBehaviour
         //}
 
         //// Checks if the player got hit by an tanmak
-        //if (_isAlive && HasHitTanmak())
-        //{
-        //    UpdateSize();
-        //}
+        if (_isAlive && HasHitTanmak())
+        {
+            UpdateSize();
+        }
     }
 
     // Check tanmak collision using a lag compensated OverlapSphere
@@ -215,8 +215,8 @@ public class PlayerController : NetworkBehaviour
     // Resets the players movement velocity
     private void ResetPlayer()
     {
-        _rigidbody.velocity = Vector2.zero;
-        _rigidbody.angularVelocity = 0f;
+        _rigidbody.velocity = Vector3.zero;
+        _rigidbody.angularVelocity = Vector3.zero;
 
         _playerDataNetworked.ResetScore();
     }
